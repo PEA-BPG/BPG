@@ -82,6 +82,17 @@ dialog menu{display:flex;gap:8px;justify-content:flex-end;padding:0;margin:16px 
 .mvb button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;min-width:40px;min-height:36px;cursor:pointer}
 .th{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .th img{width:84px;height:84px;object-fit:cover;border-radius:10px;cursor:pointer;border:1px solid var(--line)}
+.lk{cursor:pointer;border-left:4px solid var(--pri);transition:transform .15s,box-shadow .15s,border-color .15s}
+.lk b{color:var(--pri)}
+.lk:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(37,99,235,.2)}
+.lk:focus-visible{outline:3px solid var(--gold)}
+.lk.ext::after,.lk.fil::after{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700}
+.lk.ext::after{content:"↗"}.lk.fil::after{content:"▸"}
+.lk.ext,.lk.fil{padding-right:44px}
+.lk.no{border-left-color:var(--line);cursor:default}.lk.no b{color:var(--mut)}.lk.no:hover{transform:none;box-shadow:none}
+.edit .lk::after{display:none!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lk b{color:#8db4ff}}
+:root[data-theme="dark"] .lk b{color:#8db4ff}
 .sl{display:none}
 .btn{min-height:40px}
 body{-webkit-tap-highlight-color:transparent}
@@ -226,7 +237,7 @@ function ed(sec,key,i,type){ask("แก้ไขรายการ",F[type],o=>{
 function cyc(sec,i){if(!E)return;const t=S[sec].tasks[i];t.s=(t.s+1)%3;sv();go()}
 
 const linksH=(sec)=>`<div class="card"><h2>🔗 ระบบงาน / ลิงก์ติดตามข้อมูล<button class="btn" onclick="add('${sec}','link')">+ เพิ่มลิงก์</button></h2><div class="links">`+
- (S[sec].links.map((l,i)=>{const u=safe(l.u),f=l.f&&FL[l.f.k]?l.f:null;return `<a class="lk${u||f?"":" no"}" ${u?`href="${esc(u)}" target="_blank" rel="noopener"`:`href="#${sec}" title="ยังไม่ได้ใส่ลิงก์"`} ${E?`onclick="event.preventDefault();ed('${sec}','links',${i},'link')"`:f&&!u?`onclick="event.preventDefault();vf('${sec}',${i})"`:""}><span class="gh" data-s="${sec}" data-i="${i}" onclick="event.preventDefault();event.stopPropagation()" title="ลากเพื่อจัดลำดับ">⠿</span><b>${esc(l.t)}</b><small>${esc(l.d)||(u||f?"":"ยังไม่ได้ใส่ลิงก์")}</small>${f?`<button class="fch" onclick="event.preventDefault();event.stopPropagation();vf('${sec}',${i})">${f.m==="application/pdf"?"📄":"🖼"} ${esc(f.n)}</button>`:""}<span class="mvb"><button onclick="event.preventDefault();event.stopPropagation();mv('${sec}',${i},-1)" aria-label="เลื่อนขึ้น">▲</button><button onclick="event.preventDefault();event.stopPropagation();mv('${sec}',${i},1)" aria-label="เลื่อนลง">▼</button></span><button class="x" onclick="event.preventDefault();event.stopPropagation();del('${sec}','links',${i})">✕</button></a>`}).join("")||'<div class="empty">ยังไม่มีลิงก์</div>')+`</div></div>`;
+ (S[sec].links.map((l,i)=>{const u=safe(l.u),f=l.f&&FL[l.f.k]?l.f:null;return `<a class="lk${u?" ext":f?" fil":" no"}" ${u?`href="${esc(u)}" target="_blank" rel="noopener"`:`href="#${sec}" title="ยังไม่ได้ใส่ลิงก์"`} ${E?`onclick="event.preventDefault();ed('${sec}','links',${i},'link')"`:f&&!u?`onclick="event.preventDefault();vf('${sec}',${i})"`:""}><span class="gh" data-s="${sec}" data-i="${i}" onclick="event.preventDefault();event.stopPropagation()" title="ลากเพื่อจัดลำดับ">⠿</span><b>${esc(l.t)}</b><small>${esc(l.d)||(u||f?"":"ยังไม่ได้ใส่ลิงก์")}</small>${f?`<button class="fch" onclick="event.preventDefault();event.stopPropagation();vf('${sec}',${i})">${f.m==="application/pdf"?"📄":"🖼"} ${esc(f.n)}</button>`:""}<span class="mvb"><button onclick="event.preventDefault();event.stopPropagation();mv('${sec}',${i},-1)" aria-label="เลื่อนขึ้น">▲</button><button onclick="event.preventDefault();event.stopPropagation();mv('${sec}',${i},1)" aria-label="เลื่อนลง">▼</button></span><button class="x" onclick="event.preventDefault();event.stopPropagation();del('${sec}','links',${i})">✕</button></a>`}).join("")||'<div class="empty">ยังไม่มีลิงก์</div>')+`</div></div>`;
 const newsH=(sec,ttl)=>`<div class="card"><h2>📢 ${ttl}<button class="btn" onclick="add('${sec}','news')">+ เพิ่มข่าว</button></h2><div class="news">`+
  (S[sec].news.map((n,i)=>`<div class="nw" ${E?`onclick="ed('${sec}','news',${i},'news')" style="cursor:pointer"`:""}><time>${esc(n.d)}</time><b>${esc(n.t)}</b><p>${esc(n.x)}</p>${(n.im||[]).some(m=>FL[m.k])?`<div class="th">${n.im.map((m,j)=>FL[m.k]?`<img src="${FL[m.k]}" alt="" onclick="event.stopPropagation();vn('${sec}',${i},${j})">`:"").join("")}</div>`:""}<button class="x" onclick="event.stopPropagation();del('${sec}','news',${i})">✕</button></div>`).join("")||'<div class="empty">ยังไม่มีข่าว</div>')+`</div></div>`;
 const taskH=sec=>`<div class="card"><h2>✅ ติดตามงานแผนก<button class="btn" onclick="add('${sec}','task')">+ เพิ่มงาน</button></h2><div class="tw"><table><tr><th>งาน / โครงการ</th><th>ผู้รับผิดชอบ</th><th>สถานะ (กดเพื่อเปลี่ยน)</th><th></th></tr>`+
