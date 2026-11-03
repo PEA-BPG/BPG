@@ -110,6 +110,12 @@ dialog{max-height:90vh;overflow:auto}
 .card.kpi[onclick]:hover{box-shadow:0 6px 16px rgba(37,99,235,.2);transform:translateY(-2px)}
 .card.kpi{transition:transform .15s,box-shadow .15s}
 .jr.hl{border-color:var(--gold);box-shadow:0 0 0 3px rgba(245,179,1,.5)}
+.kpi.k4{--kc:#ef4444}.kpi.k5{--kc:#f97316}
+.jr.od{border-color:#ef4444;background:rgba(239,68,68,.08)}.jr.od b{color:#ef4444}
+.card.kpi.alert{background:rgba(239,68,68,.12);border:1px solid #ef4444;border-left:4px solid #ef4444;animation:pu 2s infinite}
+.card.kpi.alert .ic{background:rgba(239,68,68,.25)}.card.kpi.alert b{font-size:30px}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.45)}50%{box-shadow:0 0 0 7px rgba(239,68,68,0)}}
+@media (prefers-reduced-motion:reduce){.card.kpi.alert{animation:none}}
 .sl{display:none}
 .btn{min-height:40px}
 body{-webkit-tap-highlight-color:transparent}
@@ -248,12 +254,12 @@ const jTag=(s,st)=>{if(st===2)return '<span class="tg ok">เสร็จสิ�
 const dT=k=>S.jt.map(j=>j.dep&&j.dep[k]).filter(Boolean);
 const jBadge=j=>{const a=DPA.map(([k])=>j.dep&&j.dep[k]).filter(Boolean);if(!a.length)return"";const v=p=>p.s!==2&&p.due,o=a.some(p=>v(p)&&jDl(p.due)<0),n=a.some(p=>v(p)&&jDl(p.due)>=0&&jDl(p.due)<=5);return o?'<span class="tg bad">เกินกำหนด</span>':n?'<span class="tg warn">ใกล้ถึงกำหนด</span>':a.every(p=>p.s===2)?'<span class="tg ok">เสร็จสิ้น</span>':""};
 const jAtt=()=>{const r=[];S.jt.forEach((j,i)=>DPA.forEach(([k,n])=>{const p=j.dep&&j.dep[k];if(p&&p.s!==2&&p.due){const d=jDl(p.due);if(d<=5)r.push({i,k,n,j,p,d})}}));return r.sort((a,b)=>a.d-b.d)};
-function jtH(){const a=jAtt(),ov=a.filter(x=>x.d<0),nr=a.filter(x=>x.d>=0);
- const row=x=>`<div class="jr" onclick="jd(${x.i},'${x.k}')"><div><b>${esc(x.j.t)}</b><small>${esc(x.n)} · กำหนด ${jFd(x.p.due)}</small></div>${jTag(x.p.due,x.p.s)}</div>`;
- const grp=(c,t,l)=>l.length?`<div class="jg ${c}">${t} (${l.length})</div><div style="display:grid;gap:8px">${l.map(row).join("")}</div>`:"";
- return `<div class="card"><h2>📌 ติดตามงาน กฟส.บ้านแพง<button class="btn" onclick="jf(-1)">+ เพิ่มงาน</button></h2><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><span class="tg bad">เกินกำหนด ${ov.length}</span><span class="tg warn">ใกล้ถึงกำหนด ${nr.length}</span><span class="tg">งานทั้งหมด ${S.jt.length}</span><button class="btn" style="margin-left:auto" onclick="jall()">ดูงานทั้งหมด</button></div>`+grp("bad","เกินกำหนดแล้วเสร็จ",ov)+grp("warn","ใกล้ถึงกำหนด (ภายใน 5 วัน)",nr)+(a.length?"":`<div class="empty" style="margin-top:8px">${S.jt.length?"ไม่มีงานเกินกำหนดหรือใกล้ถึงกำหนด":"ยังไม่มีงาน ในโหมดแก้ไขกด + เพิ่มงาน"}</div>`)+`</div>`}
+const jOd=p=>p.s!==2&&p.due&&jDl(p.due)<0?" od":"";
+const jBk=p=>p.s===2?3e15:p.due?jDd(p.due):2e15;
+function jtH(){const r=[];S.jt.forEach((j,i)=>{const p=j.dep&&j.dep.bp;if(p)r.push({i,j,p})});r.sort((a,b)=>jBk(a.p)-jBk(b.p));
+ return `<div class="card"><h2>📌 ติดตามงาน กฟส.บ้านแพง<button class="btn" onclick="jf(-1)">+ เพิ่มงาน</button></h2><div style="display:grid;gap:8px">`+(r.map(x=>`<div class="jr${jOd(x.p)}" onclick="jd(${x.i},'bp')"><div><b>${esc(x.j.t)}</b><small>${x.p.due?"กำหนด "+jFd(x.p.due):"ไม่ระบุกำหนด"}${(x.j.fs||[]).length?" · 📎 "+x.j.fs.length:""}</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${E?`<button class="st s${x.p.s}" type="button" onclick="event.stopPropagation();jcy(${x.i},'bp')">${ST[x.p.s]}</button>`:`<span class="s${x.p.s}" style="font-weight:600">${ST[x.p.s]}</span>`}${jTag(x.p.due,x.p.s)}</div></div>`).join("")||'<div class="empty">ยังไม่มีงาน ในโหมดแก้ไขกด + เพิ่มงาน</div>')+`</div></div>`}
 function jtab(k){const r=[];S.jt.forEach((j,i)=>{const p=j.dep&&j.dep[k];if(p)r.push({i,j,p})});r.sort((a,b)=>(a.p.due?jDd(a.p.due):9e15)-(b.p.due?jDd(b.p.due):9e15));
- return `<div class="card"><h2>✅ ติดตามงานแผนก<button class="btn" onclick="jf(-1,'${k}')">+ เพิ่มงาน</button></h2><div style="display:grid;gap:8px">`+(r.map(x=>`<div class="jr" id="jr-${x.i}-${k}" onclick="jd(${x.i},'${k}')"><div><b>${esc(x.j.t)}</b><small>${x.p.due?"กำหนด "+jFd(x.p.due):"ไม่ระบุกำหนด"}${(x.j.fs||[]).length?" · 📎 "+x.j.fs.length:""}</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${E?`<button class="st s${x.p.s}" type="button" onclick="event.stopPropagation();jcy(${x.i},'${k}')">${ST[x.p.s]}</button>`:`<span class="s${x.p.s}" style="font-weight:600">${ST[x.p.s]}</span>`}${jTag(x.p.due,x.p.s)}</div></div>`).join("")||'<div class="empty">ยังไม่มีงาน</div>')+`</div></div>`}
+ return `<div class="card"><h2>✅ ติดตามงานแผนก<button class="btn" onclick="jf(-1,'${k}')">+ เพิ่มงาน</button></h2><div style="display:grid;gap:8px">`+(r.map(x=>`<div class="jr${jOd(x.p)}" id="jr-${x.i}-${k}" onclick="jd(${x.i},'${k}')"><div><b>${esc(x.j.t)}</b><small>${x.p.due?"กำหนด "+jFd(x.p.due):"ไม่ระบุกำหนด"}${(x.j.fs||[]).length?" · 📎 "+x.j.fs.length:""}</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${E?`<button class="st s${x.p.s}" type="button" onclick="event.stopPropagation();jcy(${x.i},'${k}')">${ST[x.p.s]}</button>`:`<span class="s${x.p.s}" style="font-weight:600">${ST[x.p.s]}</span>`}${jTag(x.p.due,x.p.s)}</div></div>`).join("")||'<div class="empty">ยังไม่มีงาน</div>')+`</div></div>`}
 function jcy(i,k){const p=S.jt[i].dep[k];p.s=(p.s+1)%3;sv();go()}
 const dopen=()=>{$("dg").returnValue="";$("dg").onclose=null;if(!$("dg").open)$("dg").showModal()};
 const jKey=j=>{const a=DPA.map(([k])=>j.dep&&j.dep[k]).filter(Boolean),o=a.filter(p=>p.s!==2);if(!a.length||!o.length)return 3e15;const d=o.filter(p=>p.due).map(p=>jDd(p.due));return d.length?Math.min(...d):2e15};
@@ -265,7 +271,7 @@ function vfx(f,t,back){const d=FL[f.k];if(!d)return;const pdf=f.m==="application
 function jd(i,only){const j=S.jt[i];if(!j)return;const fs=(j.fs||[]).filter(f=>FL[f.k]),multi=Object.keys(j.dep||{}).length>1,cur=(location.hash||"#home").slice(1);
  $("df").innerHTML=`<h3 style="margin:0">${esc(j.t)}</h3>${j.x?`<p style="white-space:pre-wrap;margin:8px 0">${esc(j.x)}</p>`:""}<div style="display:grid;gap:8px;margin:12px 0">`+
  (DPA.filter(([k])=>j.dep&&j.dep[k]&&(!only||k===only)).map(([k,n])=>{const p=j.dep[k];return `<div class="jr" style="cursor:default"><div><b>${esc(n)}</b><small>กำหนดแล้วเสร็จ ${jFd(p.due)}</small></div><div>${E?`<button class="st s${p.s}" type="button" data-k="${k}">${ST[p.s]}</button>`:`<span class="s${p.s}" style="font-weight:600">${ST[p.s]}</span> ${jTag(p.due,p.s)}`}</div>${k!=="bp"&&cur!==k?`<button class="btn p" type="button" data-g="${k}" style="min-height:32px;padding:3px 12px">ไปที่แผนก ›</button>`:""}</div>`}).join("")||'<div class="empty">ยังไม่ได้มอบหมายแผนก</div>')+`</div>`+
- (fs.length?`<div style="margin-bottom:6px;color:var(--mut);font-size:13px">ไฟล์แนบ</div>`+fs.map((f,n)=>`<button class="fch" type="button" data-f="${n}">${f.m==="application/pdf"?"📄":"🖼"} ${esc(f.n)}</button>`).join(""):"")+
+ (fs.length?`<div style="margin-bottom:6px;color:var(--mut);font-size:13px">ไฟล์แนบ</div>`+(fs.some(f=>f.m!=="application/pdf")?`<div class="th">${fs.map((f,n)=>f.m==="application/pdf"?"":`<img data-f="${n}" src="${FL[f.k]}" alt="${esc(f.n)}" title="${esc(f.n)}">`).join("")}</div>`:"")+fs.map((f,n)=>f.m!=="application/pdf"?"":`<button class="fch" type="button" data-f="${n}">📄 ${esc(f.n)}</button>`).join(""):"")+
  `<menu><button class="btn" value="x">ปิด</button>${E?'<button class="btn" type="button" id="je">แก้ไข</button><button class="btn" type="button" id="jx" style="color:#dc2626">ลบ</button>':""}</menu>`;
  $("df").querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{const p=j.dep[b.dataset.k];p.s=(p.s+1)%3;sv();jd(i,only);go()});
  $("df").querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>{$("dg").close();gt(b.dataset.g,i)});
@@ -275,9 +281,9 @@ function jd(i,only){const j=S.jt[i];if(!j)return;const fs=(j.fs||[]).filter(f=>F
    if(only&&multi){delete j.dep[only];sv();go();return}
    (j.fs||[]).forEach(f=>delete FL[f.k]);$("fl").textContent=JSON.stringify(FL);S.jt.splice(i,1);sv();go()})}
  dopen()}
-function jf(i,only){const j=i<0?{}:S.jt[i],L=only?DP.filter(([k])=>k===only):DPA,v={t:j.t||"",x:j.x||""};
- L.forEach(([k])=>{const p=j.dep&&j.dep[k];v["c_"+k]=!!p;v["du_"+k]=(p&&p.due)||""});
- const F=[{k:"t",l:"หัวข้องาน"},{k:"x",l:"รายละเอียด",a:3},{k:"fs",type:"file",multi:1,doc:1,acc:"image/*,application/pdf",l:"แนบไฟล์ภาพ/PDF (สูงสุด 4 ไฟล์ ไม่บังคับ)"},{k:"rmf",l:"ลบไฟล์แนบเดิมทั้งหมด (พิมพ์ 1)"},
+function jf(i,only){const j=i<0?{}:S.jt[i],L=only?DPA.filter(([k])=>k===only):[DPA[4],...DP],v={t:j.t||"",x:j.x||""};
+ L.forEach(([k])=>{const p=j.dep&&j.dep[k];v["c_"+k]=!!p;v["du_"+k]=(p&&p.due)||""});if(i<0&&!only)v.c_bp=true;
+ const F=[{k:"t",l:"หัวข้องาน"},{k:"x",l:"รายละเอียด",a:3},{k:"fs",type:"file",multi:1,doc:1,acc:"image/*,application/pdf",l:"🖼️ เพิ่มรูปภาพ หรือไฟล์ PDF (เลือกได้หลายไฟล์ สูงสุด 6 ไฟล์ ไม่บังคับ)"},{k:"rmf",l:"ลบไฟล์แนบเดิมทั้งหมด (พิมพ์ 1)"},
   ...L.flatMap(([k,n])=>only?[{k:"du_"+k,type:"date",l:"กำหนดแล้วเสร็จ – "+n+" (ไม่บังคับ)"}]:[{k:"c_"+k,type:"check",l:n},{k:"du_"+k,type:"date",l:"กำหนดแล้วเสร็จของ "+n+" (ไม่บังคับ)"}])];
  ask(i<0?"เพิ่มงาน":"แก้ไขงาน",F,o=>{if(!o.t)return;
   const dep=Object.assign({},j.dep||{});
@@ -285,14 +291,14 @@ function jf(i,only){const j=i<0?{}:S.jt[i],L=only?DP.filter(([k])=>k===only):DPA
   if(!Object.keys(dep).length){tt("เลือกอย่างน้อย 1 แผนก หรือ งาน กฟส.บ้านแพง");return}
   const x=i<0?{fs:[]}:j;x.t=o.t;x.x=o.x;x.dep=dep;
   if(o.rmf){(x.fs||[]).forEach(f=>delete FL[f.k]);x.fs=[]}
-  for(const f of (o.fs||[])){if((x.fs||[]).length>=4){tt("แนบได้สูงสุด 4 ไฟล์");break}
+  for(const f of (o.fs||[])){if((x.fs||[]).length>=6){tt("แนบได้สูงสุด 6 ไฟล์");break}
    if(JSON.stringify(FL).length+f.d.length>11e6){tt("พื้นที่ไฟล์แนบเต็ม ลบไฟล์เก่าหรือใช้ลิงก์ภายนอกแทน");break}
    const k="f"+Date.now().toString(36)+Math.random().toString(36).slice(2,5);FL[k]=f.d;(x.fs=x.fs||[]).push({k,n:f.n,m:f.m})}
   $("fl").textContent=JSON.stringify(FL);if(i<0)S.jt.push(x)},v)}
-function ks(f){const t=["งานทั้งหมด","รอดำเนินการ","กำลังดำเนินการ","เสร็จสิ้น"][f+1],r=[];
- S.jt.forEach((j,i)=>DPA.forEach(([k,n])=>{const p=j.dep&&j.dep[k];if(p&&(f<0||p.s===f))r.push({i,k,n,j,p})}));
+function ks(f){const t=["งานทั้งหมด","รอดำเนินการ","กำลังดำเนินการ","เสร็จสิ้น","เกินกำหนด","ใกล้ถึงกำหนด (ภายใน 5 วัน)"][f+1],r=[],ok=p=>f<0?1:f<3?p.s===f:p.s!==2&&p.due&&(f===3?jDl(p.due)<0:jDl(p.due)>=0&&jDl(p.due)<=5);
+ S.jt.forEach((j,i)=>DPA.forEach(([k,n])=>{const p=j.dep&&j.dep[k];if(p&&ok(p))r.push({i,k,n,j,p})}));
  r.sort((a,b)=>(a.p.due?jDd(a.p.due):9e15)-(b.p.due?jDd(b.p.due):9e15));
- $("df").innerHTML=`<h3 style="margin:0">${t} (${r.length})</h3><div style="display:grid;gap:8px;margin-top:10px;max-height:60vh;overflow:auto">`+(r.map((x,q)=>`<div class="jr" data-q="${q}"><div><b>${esc(x.j.t)}</b><small>${esc(x.n)} · ${x.p.due?"กำหนด "+jFd(x.p.due):"ไม่ระบุกำหนด"}</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="s${x.p.s}" style="font-weight:600">${ST[x.p.s]}</span>${jTag(x.p.due,x.p.s)}<button class="btn" type="button" data-d="${q}" style="min-height:32px;padding:3px 10px">รายละเอียด</button></div></div>`).join("")||'<div class="empty">ไม่มีงาน</div>')+`</div><div style="color:var(--mut);font-size:13px;margin-top:8px">กดที่งานเพื่อไปยังหน้าแผนก (งาน กฟส.บ้านแพง จะแสดงรายละเอียด)</div><menu><button class="btn" value="x">ปิด</button></menu>`;
+ $("df").innerHTML=`<h3 style="margin:0">${t} (${r.length})</h3><div style="display:grid;gap:8px;margin-top:10px;max-height:60vh;overflow:auto">`+(r.map((x,q)=>`<div class="jr${jOd(x.p)}" data-q="${q}"><div><b>${esc(x.j.t)}</b><small>${esc(x.n)} · ${x.p.due?"กำหนด "+jFd(x.p.due):"ไม่ระบุกำหนด"}</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="s${x.p.s}" style="font-weight:600">${ST[x.p.s]}</span>${jTag(x.p.due,x.p.s)}<button class="btn" type="button" data-d="${q}" style="min-height:32px;padding:3px 10px">รายละเอียด</button></div></div>`).join("")||'<div class="empty">ไม่มีงาน</div>')+`</div><div style="color:var(--mut);font-size:13px;margin-top:8px">กดที่งานเพื่อไปยังหน้าแผนก (งาน กฟส.บ้านแพง จะแสดงรายละเอียด)</div><menu><button class="btn" value="x">ปิด</button></menu>`;
  $("df").querySelectorAll("[data-q]").forEach(e=>e.onclick=()=>{const x=r[+e.dataset.q];if(x.k==="bp"){jd(x.i,"bp");return}$("dg").close();gt(x.k,x.i)});
  $("df").querySelectorAll("[data-d]").forEach(b=>b.onclick=ev=>{ev.stopPropagation();const x=r[+b.dataset.d];jd(x.i,x.k)});
  dopen()}
@@ -345,7 +351,7 @@ const newsH=(sec,ttl)=>`<div class="card"><h2>📢 ${ttl}<button class="btn" onc
  (S[sec].news.map((n,i)=>`<div class="nw" ${E?`onclick="ed('${sec}','news',${i},'news')" style="cursor:pointer"`:""}><time>${esc(n.d)}</time><b>${esc(n.t)}</b><p>${esc(n.x)}</p>${(n.im||[]).some(m=>FL[m.k])?`<div class="th">${n.im.map((m,j)=>FL[m.k]?`<img src="${FL[m.k]}" alt="" onclick="event.stopPropagation();lbx('${sec}',${i},${j})">`:"").join("")}</div>`:""}<button class="x" onclick="event.stopPropagation();del('${sec}','news',${i})">✕</button></div>`).join("")||'<div class="empty">ยังไม่มีข่าว</div>')+`</div></div>`;
 const taskH=sec=>`<div class="card"><h2>✅ ติดตามงานแผนก<button class="btn" onclick="add('${sec}','task')">+ เพิ่มงาน</button></h2><div class="tw"><table><tr><th>งาน / โครงการ</th><th>ผู้รับผิดชอบ</th><th>สถานะ (กดเพื่อเปลี่ยน)</th><th></th></tr>`+
  (S[sec].tasks.map((t,i)=>`<tr><td ${E?`onclick="ed('${sec}','tasks',${i},'task')" style="cursor:pointer"`:""}>${esc(t.t)}</td><td>${esc(t.o)}</td><td><button class="st s${t.s}" onclick="cyc('${sec}',${i})">${ST[t.s]}</button></td><td><button class="x" style="position:static;display:${E?"block":"none"}" onclick="del('${sec}','tasks',${i})">✕</button></td></tr>`).join("")||'<tr><td colspan="4" class="empty">ยังไม่มีงาน</td></tr>')+`</table></div></div>`;
-const kpi=(ic,n,l,f)=>`<div class="card kpi${f===undefined?"":" k"+(f+1)}"${f===undefined?"":` onclick="ks(${f})" role="button" tabindex="0" style="cursor:pointer"`}><div class="ic">${ic}</div><div><b>${n}</b><span>${l}</span></div></div>`;
+const kpi=(ic,n,l,f)=>`<div class="card kpi${f===undefined?"":" k"+(f+1)}${f===3&&n>0?" alert":""}"${f===undefined?"":` onclick="ks(${f})" role="button" tabindex="0" style="cursor:pointer"`}><div class="ic">${ic}</div><div><b>${n}</b><span>${l}</span></div></div>`;
 
 const at=p=>p.split(".").reduce((o,k)=>o[k],S.org);
 const av=x=>x.ph&&PH[x.k]?`<img src="${PH[x.k]}" alt="">`:"<span>👤</span>";
@@ -410,7 +416,7 @@ function org(){const O=S.org;
 function home(){
  const T=allT(),d=cnt(T,2),p=cnt(T,1),w=cnt(T,0),n=T.length||1,a=d/n*100,b=a+p/n*100;
  const news=["home","ops","cs","fin"].reduce((s,k)=>s+S[k].news.length,0);
- return `<button class="srb" onclick="sr()"><span>🔍</span> ค้นหาระบบงาน พิมพ์ชื่อระบบที่ต้องการ</button><div class="g4">${kpi("📋",T.length,"งานทั้งหมด",-1)}${kpi("⏳",w,"รอดำเนินการ",0)}${kpi("🔧",p,"กำลังดำเนินการ",1)}${kpi("✅",d,"เสร็จสิ้น",2)}</div>
+ return `<button class="srb" onclick="sr()"><span>🔍</span> ค้นหาระบบงาน พิมพ์ชื่อระบบที่ต้องการ</button><div class="g4">${kpi("📋",T.length,"งานทั้งหมด",-1)}${kpi("⏳",w,"รอดำเนินการ",0)}${kpi("🔧",p,"กำลังดำเนินการ",1)}${kpi("✅",d,"เสร็จสิ้น",2)}${kpi("⏰",jAtt().filter(x=>x.d>=0).length,"ใกล้ถึงกำหนด",4)}${kpi("⚠️",jAtt().filter(x=>x.d<0).length,"เกินกำหนด",3)}</div>
  <div class="g2"><div style="display:grid;gap:18px">${jtH()}${linksH("home")}${newsH("home","ข่าวประชาสัมพันธ์")}</div>
  <div style="display:grid;gap:18px;align-content:start"><div class="card"><h2>ภาพรวมงานรายแผนก</h2>`+
  P.slice(1,5).map(([k,t])=>{const a=dT(k),m=a.length||1;return `<div class="pr"><div><a href="#${k}" style="color:inherit">${t}</a><span>${cnt(a,2)}/${a.length}</span></div><div class="bar"><i style="width:${cnt(a,2)/m*100}%"></i><u style="width:${cnt(a,1)/m*100}%"></u></div></div>`}).join("")+
